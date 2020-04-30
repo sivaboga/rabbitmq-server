@@ -14,7 +14,7 @@
 %% Copyright (c) 2007-2020 VMware, Inc. or its affiliates.  All rights reserved.
 %%
 
--module(transducers_SUITE).
+-module(unit_transducers_SUITE).
 
 -compile(export_all).
 
