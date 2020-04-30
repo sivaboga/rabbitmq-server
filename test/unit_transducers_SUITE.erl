@@ -34,19 +34,6 @@ groups() ->
      {map_worker_pool_tests, [parallel], [map_worker_pool_transducer]}
     ].
 
-init_per_testcase(map_worker_pool, Config) ->
-    case erlang:system_info(schedulers) of
-        Count when Count < 2 ->
-            {skip, "Results not meaningful when tested with a single scheduler"};
-        _ ->
-            Config
-    end;
-init_per_testcase(_, Config) ->
-    Config.
-
-end_per_testcase(_, Config) ->
-    ok.
-
 %% ---------------------------------------------------------------------------
 
 map_transducer(_Config) ->
