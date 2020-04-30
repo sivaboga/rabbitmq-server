@@ -16,43 +16,54 @@
 
 -module(unit_transducers_SUITE).
 
--compile(export_all).
-
 -include_lib("common_test/include/ct.hrl").
 -include_lib("eunit/include/eunit.hrl").
 -include_lib("rabbit_common/include/rabbit.hrl").
 
+-compile(export_all).
+
 all() ->
     [
-     map,
-     map_worker_pool
+     {group, map_tests},
+     {group, map_worker_pool_tests}
     ].
 
-init_per_suite(Config) ->
+groups() ->
+    [
+     {map_tests, [parallel], [map_transducer]},
+     {map_worker_pool_tests, [parallel], [map_worker_pool_transducer]}
+    ].
+
+init_per_testcase(map_worker_pool, Config) ->
+    case erlang:system_info(schedulers) of
+        Count when Count < 2 ->
+            {skip, "Results not meaningful when tested with a single scheduler"};
+        _ ->
+            Config
+    end;
+init_per_testcase(_, Config) ->
     Config.
 
-end_per_suite(Config) ->
-    Config.
+end_per_testcase(_, Config) ->
+    ok.
 
 %% ---------------------------------------------------------------------------
 
-map(_Config) ->
+map_transducer(_Config) ->
     Xf = transducers:map(fun (I) -> I + 1 end),
     ?assertEqual([2, 3, 4], transducers:transduce(Xf,
                                                   fun into_list/1,
                                                   lists:seq(1, 3))).
 
-map_worker_pool(_Config) ->
-    ?assert(erlang:system_info(schedulers) > 3,
-            "Results not meaningful when tested with a single scheduler"),
-    Xf = transducers:map_worker_pool(4, fun (I) ->
+map_worker_pool_transducer(_Config) ->
+    Xf = transducers:map_worker_pool(2, fun (I) ->
                                                 timer:sleep(200),
                                                 I + I
                                         end),
     {Time, Value} = timer:tc(transducers, transduce,
                              [Xf, fun into_list/1, lists:seq(1, 3)]),
-    ?assertEqual([2, 4, 6], Value),
-    ?assertMatch(T when T < 800000, Time,
+    ?assertEqual([2, 4, 6], lists:sort(Value)),
+    ?assertMatch(T when T < 600000, Time,
                         "Should complete faster than serially").
 
 %% ---------------------------------------------------------------------------

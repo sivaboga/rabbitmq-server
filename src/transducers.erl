@@ -67,25 +67,24 @@ map_worker_pool(WorkerCount, Fun) ->
                     Rf({NewResult});
                 ({Result, Input}) ->
                     counters:add(JobsOutstanding, 1, 1),
-                    case ets:match(WorkersEts, {'_', free, '_'}, 1) of
+                    case ets:match(WorkersEts, {'_', free, '$1'}, 1) of
                         '$end_of_table' ->
+                            io:format("No free workers...~n", []),
                             % should we check for dead workers?
                             receive
                                 {result, WorkerResult} ->
                                     counters:sub(JobsOutstanding, 1, 1),
-                                    dispatch(WorkersEts, Input),
+                                    {[[FreeWorkerPid]], _} = ets:match(WorkersEts, {'_', free, '$1'}, 1),
+                                    FreeWorkerPid ! {work, self(), Input},
                                     Rf({Result, WorkerResult})
                             end;
-                        _ ->
-                            dispatch(WorkersEts, Input),
+                        {[[FreeWorkerPid]], _} ->
+                            io:format("Found free worker ~p~n", [FreeWorkerPid]),
+                            FreeWorkerPid ! {work, self(), Input},
                             Result
                     end
             end
     end.
-
-dispatch(WorkersEts, Input) ->
-    {[[FreeWorkerPid]], _} = ets:match(WorkersEts, {'_', free, '$1'}, 1),
-    FreeWorkerPid ! {work, self(), Input}.
 
 worker_loop(WorkersEts, Id, Fun, CoordinatorPid) ->
     ets:insert(WorkersEts, {Id, free, self()}),
