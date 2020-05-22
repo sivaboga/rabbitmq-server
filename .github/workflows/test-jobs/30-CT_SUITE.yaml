@@ -1,0 +1,112 @@
+  # vim:sw=2:et:
+  ct-$(CT_SUITE):
+    needs: [checks]
+    # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
+    name: ct-$(CT_SUITE)
+    runs-on: ubuntu-18.04
+    steps:
+      - name: CHECKOUT REPOSITORY
+        uses: actions/checkout@v2
+      # https://github.com/marketplace/actions/setup-elixir
+      - name: CONFIGURE OTP & ELIXIR
+        uses: actions/setup-elixir@v1
+        with:
+          otp-version: $(ERLANG_VERSION)
+          # https://github.com/elixir-lang/elixir/releases
+          elixir-version: $(ELIXIR_VERSION)
+      - name: CACHE DEPS
+        uses: actions/cache@v1
+        with:
+          path: deps
+          key: otp-$(ERLANG_VERSION)_git-${{ github.sha }}_deps
+      - name: RUN TESTS
+        run: |
+          branch_or_tag_name=${GITHUB_REF#refs/*/}
+          ! test -d ebin || touch ebin/*
+          export BASE_RMQ_REF=$(base_rmq_ref)
+          export ERLANG_VERSION=$(ERLANG_VERSION)
+          export ELIXIR_VERSION=$(ELIXIR_VERSION)
+          make ct-$(CT_SUITE) \
+            base_rmq_ref=$(base_rmq_ref) \
+            current_rmq_ref=$branch_or_tag_name \
+            FULL= \
+            FAIL_FAST=1 \
+            SKIP_AS_ERROR=1 \
+            CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
+      - name: HONEYCOMB
+        run: |
+          for f in honeycomb/*; do
+            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci"
+          done
+      - name: CACHE SECONDARY UMBRELLAS
+        if: success() && '$(ERLANG_VERSION_IS)' == 'oldest'
+        uses: actions/cache@v1
+        with:
+          path: umbrellas
+          key: $(SECONDARY_UMBRELLAS_CACHE_KEY)
+      - name: VERIFY SECONDARY UMBRELLA COPIES (in case of cache restore failure)
+        if: success() && '$(ERLANG_VERSION_IS)' == 'oldest'
+        run: |
+          set -x
+          for version in $(MIXED_VERSION_TESTING_WITH); do
+            umbrella="umbrellas/$version"
+            if ! test -d "$umbrella"  ||
+               ! make -C "$umbrella/deps/$(PROJECT)" test-dist; then
+              rm -rf "$umbrella"
+
+              # Fetch the master Umbrella; the final umbrellas are created from
+              # the master copy.
+              if ! test -d umbrellas/master; then
+                git config --global advice.detachedHead false
+                git clone \
+                  https://github.com/rabbitmq/rabbitmq-public-umbrella.git \
+                  umbrellas/master
+                make -C umbrellas/master co # To get RabbitMQ components.
+              fi
+
+              # We copy the master Umbrella and checkout the appropriate tag.
+              cp -a umbrellas/master "$umbrella"
+              git -C "$umbrella" checkout "$(base_rmq_ref)"
+              make -C "$umbrella" up BRANCH="$version"
+              # To remove third-party deps which were checked out when the
+              # projects were on the `master` branch. Thus, possibly not the
+              # version pinning we expect. We update the Umbrella one last time
+              # to fetch the correct third-party deps.
+              make -C "$umbrella" clean-3rd-party-repos
+              make -C "$umbrella" up
+              make -C "$umbrella/deps/$(PROJECT)" test-dist
+              rm -fr "$umbrella"/deps/*/{.git,test} "$umbrella"/.git
+            fi
+          done
+          rm -fr umbrellas/master
+      - name: RUN TESTS [mixed-versions]
+        if: success() && '$(ERLANG_VERSION_IS)' == 'oldest'
+        run: |
+          set -x
+          branch_or_tag_name=${GITHUB_REF#refs/*/}
+          for umbrella in umbrellas/*; do
+            test -d "$umbrella"
+            printf '\n\033[1;32mMixing clusters with RabbitMQ %s\033[0m' \
+              $(basename "$umbrella")
+            make distclean-ct ct-$(CT_SUITE) \
+              base_rmq_ref=$(base_rmq_ref) \
+              current_rmq_ref=$branch_or_tag_name \
+              FULL= \
+              FAIL_FAST=1 \
+              SKIP_AS_ERROR=1 \
+              SECONDARY_UMBRELLA=$PWD/$umbrella \
+              RABBITMQ_FEATURE_FLAGS=
+          done
+      - name: ON FAILURE ARCHIVE TESTS LOGS
+        if: failure()
+        run: |
+          make ct-logs-archive
+      - name: ON FAILURE UPLOAD TESTS LOGS ARTIFACT
+        # https://github.com/marketplace/actions/upload-artifact
+        uses: actions/upload-artifact@v2-preview
+        if: failure()
+        with:
+          name: ct-$(CT_SUITE)-logs
+          path: "*-ct-logs-*.tar.xz"
