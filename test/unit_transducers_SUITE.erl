@@ -34,6 +34,11 @@ groups() ->
      {map_worker_pool_tests, [parallel], [map_worker_pool_transducer]}
     ].
 
+suite() ->
+    [
+     {timetrap, {minutes, 1}}
+    ].
+
 %% ---------------------------------------------------------------------------
 
 map_transducer(_Config) ->
@@ -51,7 +56,9 @@ map_worker_pool_transducer(_Config) ->
                              [Xf, fun into_list/1, lists:seq(1, 3)]),
     ?assertEqual([2, 4, 6], lists:sort(Value)),
     ?assertMatch(T when T < 600000, Time,
-                        "Should complete faster than serially").
+                        "Should complete faster than serially"),
+    ?assertMatch(T when T > 400000, Time,
+                        "But not faster than the worker count allows").
 
 %% ---------------------------------------------------------------------------
 

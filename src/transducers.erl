@@ -58,7 +58,7 @@ map_worker_pool(WorkerCount, Fun) ->
                                          Acc;
                                      ReduceRemaining(Count, Acc) ->
                                          receive
-                                             {result, WorkerResult} ->
+                                             {result, _, WorkerResult} ->
                                                  ReduceRemaining(Count - 1,
                                                                  Rf({Acc, WorkerResult}))
                                          end
@@ -67,34 +67,42 @@ map_worker_pool(WorkerCount, Fun) ->
                     Rf({NewResult});
                 ({Result, Input}) ->
                     counters:add(JobsOutstanding, 1, 1),
-                    case ets:match(WorkersEts, {'_', free, '$1'}, 1) of
-                        '$end_of_table' ->
-                            io:format("No free workers...~n", []),
+                    case free_worker(WorkersEts) of
+                        {FreeWorkerId, FreeWorkerPid} ->
+                            %% io:format("Found free worker ~p with pid ~p~n", [FreeWorkerId, FreeWorkerPid]),
+                            true = ets:update_element(WorkersEts, FreeWorkerId, {2, busy}),
+                            FreeWorkerPid ! {work, self(), Input},
+                            Result;
+                        none ->
+                            %% io:format("No free workers...~n", []),
                             % should we check for dead workers?
                             receive
-                                {result, WorkerResult} ->
+                                {result, WorkerId, WorkerResult} ->
                                     counters:sub(JobsOutstanding, 1, 1),
-                                    {[[FreeWorkerPid]], _} = ets:match(WorkersEts, {'_', free, '$1'}, 1),
+                                    true = ets:update_element(WorkersEts, WorkerId, {2, free}),
+                                    {FreeWorkerId, FreeWorkerPid} = free_worker(WorkersEts),
+                                    %% io:format("Found free worker ~p with pid ~p~n", [FreeWorkerId, FreeWorkerPid]),
+                                    true = ets:update_element(WorkersEts, FreeWorkerId, {2, busy}),
                                     FreeWorkerPid ! {work, self(), Input},
                                     Rf({Result, WorkerResult})
-                            end;
-                        {[[FreeWorkerPid]], _} ->
-                            io:format("Found free worker ~p~n", [FreeWorkerPid]),
-                            FreeWorkerPid ! {work, self(), Input},
-                            Result
+                            end
                     end
             end
+    end.
+
+free_worker(WorkersEts) ->
+    case ets:match(WorkersEts, {'$1', free, '$2'}, 1) of
+        '$end_of_table' -> none;
+        {[[Id, Pid]], _} -> {Id, Pid}
     end.
 
 worker_loop(WorkersEts, Id, Fun, CoordinatorPid) ->
     ets:insert(WorkersEts, {Id, free, self()}),
     CoordinatorPid ! {ready, Id},
     (fun WorkerLoop() ->
-             true = ets:update_element(WorkersEts, Id, {2, free}),
              receive
                  {work, Dest, Input} ->
-                     true = ets:update_element(WorkersEts, Id, {2, busy}),
-                     Dest ! {result, Fun(Input)},
+                     Dest ! {result, Id, Fun(Input)},
                      WorkerLoop();
                  finish ->
                      ets:delete(WorkersEts, Id)
