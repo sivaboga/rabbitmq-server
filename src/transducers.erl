@@ -5,7 +5,7 @@
          map/1,
          map_worker_pool/2]).
 
--export([worker_loop/4]).
+-export([worker_loop/3]).
 
 -type reducer() :: fun(({} | {any()} | {any(), any()}) -> any()).
 -type transducer() :: fun((reducer()) -> reducer()).
@@ -42,14 +42,17 @@ map(Fun) ->
 map_worker_pool(WorkerCount, Fun) ->
     fun (Rf) ->
             JobsOutstanding = counters:new(1, []),
-            WorkersEts = ets:new(?MODULE, [public]),
+            WorkersEts = ets:new(?MODULE, []),
             WorkerIds = lists:seq(1, WorkerCount),
             [erlang:monitor(process,
                             spawn(?MODULE,
                                   worker_loop,
-                                  [WorkersEts, Id, Fun, self()]))
+                                  [Id, Fun, self()]))
              || Id <- WorkerIds],
-            [receive {ready, Id} -> ok end || Id <- WorkerIds],
+            [receive
+                 {ready, Id, Pid} ->
+                     ets:insert(WorkersEts, {Id, free, Pid})
+             end || Id <- WorkerIds],
             fun
                 ({}) ->
                     Rf({});
@@ -64,6 +67,7 @@ map_worker_pool(WorkerCount, Fun) ->
                                          end
                                  end)(counters:get(JobsOutstanding, 1), Result),
                     ets:foldl(fun ({_, _, Pid}, _) -> Pid ! finish end, ok, WorkersEts),
+                    ets:delete(WorkersEts),
                     Rf({NewResult});
                 ({Result, Input}) ->
                     counters:add(JobsOutstanding, 1, 1),
@@ -96,15 +100,14 @@ free_worker(WorkersEts) ->
         {[[Id, Pid]], _} -> {Id, Pid}
     end.
 
-worker_loop(WorkersEts, Id, Fun, CoordinatorPid) ->
-    ets:insert(WorkersEts, {Id, free, self()}),
-    CoordinatorPid ! {ready, Id},
+worker_loop(Id, Fun, CoordinatorPid) ->
+    CoordinatorPid ! {ready, Id, self()},
     (fun WorkerLoop() ->
              receive
                  {work, Dest, Input} ->
                      Dest ! {result, Id, Fun(Input)},
                      WorkerLoop();
                  finish ->
-                     ets:delete(WorkersEts, Id)
+                     ok
              end
      end)().
