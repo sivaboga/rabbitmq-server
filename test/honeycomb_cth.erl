@@ -74,14 +74,15 @@ post_end_per_testcase(Suite, TC, _Config, Return, #state{github_workflow = Githu
               "\"suite\":\"~p\","
               "\"testcase\":\"~p\","
               "\"duration_seconds\":~p,"
-              "\"result\":\"~p\""
+              "\"result\":~s"
               "}~n", [GithubWorkflow, GithubRunId, GithubRepository,
                       GithubSha, GithubRef, BaseRmqRef, ErlangVersion,
                       ElixirVersion, OtpRelease,
                       CpuTopologyJson, Schedulers,
                       SystemArchitecture, SystemMemoryDataJson,
                       Suite, TC,
-                      DurationMicroseconds / 1000000, Return]),
+                      DurationMicroseconds / 1000000,
+                      jsx:encode(list_to_binary(io_lib:format("~p", [Return])))]),
     file:close(F),
     {Return, State#state{start_times = StartTimes1}}.
 
