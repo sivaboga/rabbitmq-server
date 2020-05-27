@@ -212,13 +212,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -289,7 +282,23 @@ jobs:
         with:
           name: ct-amqqueue_backward_compatibility-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-backing_queue:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -324,13 +333,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -401,7 +403,23 @@ jobs:
         with:
           name: ct-backing_queue-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-channel_interceptor:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -436,13 +454,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -513,7 +524,23 @@ jobs:
         with:
           name: ct-channel_interceptor-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-channel_operation_timeout:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -548,13 +575,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -625,7 +645,23 @@ jobs:
         with:
           name: ct-channel_operation_timeout-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-cluster:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -660,13 +696,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -737,7 +766,23 @@ jobs:
         with:
           name: ct-cluster-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-cluster_rename:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -772,13 +817,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -849,7 +887,23 @@ jobs:
         with:
           name: ct-cluster_rename-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-clustering_management:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -884,13 +938,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -961,7 +1008,23 @@ jobs:
         with:
           name: ct-clustering_management-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-config_schema:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -996,13 +1059,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -1073,7 +1129,23 @@ jobs:
         with:
           name: ct-config_schema-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-confirms_rejects:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -1108,13 +1180,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -1185,7 +1250,23 @@ jobs:
         with:
           name: ct-confirms_rejects-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-consumer_timeout:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -1220,13 +1301,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -1297,7 +1371,23 @@ jobs:
         with:
           name: ct-consumer_timeout-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-crashing_queues:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -1332,13 +1422,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -1409,7 +1492,23 @@ jobs:
         with:
           name: ct-crashing_queues-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-dead_lettering:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -1444,13 +1543,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -1521,7 +1613,23 @@ jobs:
         with:
           name: ct-dead_lettering-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-definition_import:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -1556,13 +1664,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -1633,7 +1734,23 @@ jobs:
         with:
           name: ct-definition_import-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-disconnect_detected_during_alarm:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -1668,13 +1785,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -1745,7 +1855,23 @@ jobs:
         with:
           name: ct-disconnect_detected_during_alarm-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-dynamic_ha:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -1780,13 +1906,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -1857,7 +1976,23 @@ jobs:
         with:
           name: ct-dynamic_ha-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-dynamic_qq:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -1892,13 +2027,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -1969,7 +2097,23 @@ jobs:
         with:
           name: ct-dynamic_qq-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-eager_sync:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -2004,13 +2148,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -2081,7 +2218,23 @@ jobs:
         with:
           name: ct-eager_sync-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-feature_flags:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -2116,13 +2269,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -2193,7 +2339,23 @@ jobs:
         with:
           name: ct-feature_flags-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-health_check:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -2228,13 +2390,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -2305,7 +2460,23 @@ jobs:
         with:
           name: ct-health_check-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-lazy_queue:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -2340,13 +2511,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -2417,7 +2581,23 @@ jobs:
         with:
           name: ct-lazy_queue-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-list_consumers_sanity_check:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -2452,13 +2632,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -2529,7 +2702,23 @@ jobs:
         with:
           name: ct-list_consumers_sanity_check-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-list_queues_online_and_offline:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -2564,13 +2753,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -2641,7 +2823,23 @@ jobs:
         with:
           name: ct-list_queues_online_and_offline-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-many_node_ha:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -2676,13 +2874,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -2753,7 +2944,23 @@ jobs:
         with:
           name: ct-many_node_ha-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-message_size_limit:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -2788,13 +2995,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -2865,7 +3065,23 @@ jobs:
         with:
           name: ct-message_size_limit-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-metrics:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -2900,13 +3116,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -2977,7 +3186,23 @@ jobs:
         with:
           name: ct-metrics-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-mirrored_supervisor:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -3012,13 +3237,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -3089,7 +3307,23 @@ jobs:
         with:
           name: ct-mirrored_supervisor-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-msg_store:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -3124,13 +3358,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -3201,7 +3428,23 @@ jobs:
         with:
           name: ct-msg_store-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-peer_discovery_classic_config:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -3236,13 +3479,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -3313,7 +3549,23 @@ jobs:
         with:
           name: ct-peer_discovery_classic_config-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-peer_discovery_dns:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -3348,13 +3600,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -3425,7 +3670,23 @@ jobs:
         with:
           name: ct-peer_discovery_dns-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-per_user_connection_tracking:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -3460,13 +3721,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -3537,7 +3791,23 @@ jobs:
         with:
           name: ct-per_user_connection_tracking-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-per_vhost_connection_limit:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -3572,13 +3842,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -3649,7 +3912,23 @@ jobs:
         with:
           name: ct-per_vhost_connection_limit-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-per_vhost_connection_limit_partitions:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -3684,13 +3963,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -3761,7 +4033,23 @@ jobs:
         with:
           name: ct-per_vhost_connection_limit_partitions-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-per_vhost_msg_store:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -3796,13 +4084,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -3873,7 +4154,23 @@ jobs:
         with:
           name: ct-per_vhost_msg_store-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-per_vhost_queue_limit:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -3908,13 +4205,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -3985,7 +4275,23 @@ jobs:
         with:
           name: ct-per_vhost_queue_limit-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-policy:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -4020,13 +4326,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -4097,7 +4396,23 @@ jobs:
         with:
           name: ct-policy-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-priority_queue:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -4132,13 +4447,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -4209,7 +4517,23 @@ jobs:
         with:
           name: ct-priority_queue-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-priority_queue_recovery:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -4244,13 +4568,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -4321,7 +4638,23 @@ jobs:
         with:
           name: ct-priority_queue_recovery-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-product_info:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -4356,13 +4689,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -4433,7 +4759,23 @@ jobs:
         with:
           name: ct-product_info-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-proxy_protocol:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -4468,13 +4810,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -4545,7 +4880,23 @@ jobs:
         with:
           name: ct-proxy_protocol-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-publisher_confirms_parallel:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -4580,13 +4931,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -4657,7 +5001,23 @@ jobs:
         with:
           name: ct-publisher_confirms_parallel-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-queue_length_limits:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -4692,13 +5052,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -4769,7 +5122,23 @@ jobs:
         with:
           name: ct-queue_length_limits-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-queue_master_location:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -4804,13 +5173,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -4881,7 +5243,23 @@ jobs:
         with:
           name: ct-queue_master_location-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-queue_parallel:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -4916,13 +5294,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -4993,7 +5364,23 @@ jobs:
         with:
           name: ct-queue_parallel-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-quorum_queue:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -5028,13 +5415,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -5105,7 +5485,23 @@ jobs:
         with:
           name: ct-quorum_queue-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-rabbit_core_metrics_gc:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -5140,13 +5536,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -5217,7 +5606,23 @@ jobs:
         with:
           name: ct-rabbit_core_metrics_gc-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-rabbit_fifo:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -5252,13 +5657,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -5329,7 +5727,23 @@ jobs:
         with:
           name: ct-rabbit_fifo-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-rabbit_fifo_int:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -5364,13 +5778,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -5441,7 +5848,23 @@ jobs:
         with:
           name: ct-rabbit_fifo_int-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-rabbit_fifo_prop:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -5476,13 +5899,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -5553,7 +5969,23 @@ jobs:
         with:
           name: ct-rabbit_fifo_prop-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-rabbitmq_queues_cli_integration:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -5588,13 +6020,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -5665,7 +6090,23 @@ jobs:
         with:
           name: ct-rabbitmq_queues_cli_integration-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-rabbitmqctl_integration:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -5700,13 +6141,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -5777,7 +6211,23 @@ jobs:
         with:
           name: ct-rabbitmqctl_integration-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-rabbitmqctl_shutdown:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -5812,13 +6262,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -5889,7 +6332,23 @@ jobs:
         with:
           name: ct-rabbitmqctl_shutdown-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-signal_handling:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -5924,13 +6383,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -6001,7 +6453,23 @@ jobs:
         with:
           name: ct-signal_handling-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-simple_ha:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -6036,13 +6504,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -6113,7 +6574,23 @@ jobs:
         with:
           name: ct-simple_ha-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-single_active_consumer:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -6148,13 +6625,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -6225,7 +6695,23 @@ jobs:
         with:
           name: ct-single_active_consumer-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-sup_delayed_restart:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -6260,13 +6746,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -6337,7 +6816,23 @@ jobs:
         with:
           name: ct-sup_delayed_restart-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-sync_detection:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -6372,13 +6867,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -6449,7 +6937,23 @@ jobs:
         with:
           name: ct-sync_detection-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-term_to_binary_compat_prop:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -6484,13 +6988,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -6561,7 +7058,23 @@ jobs:
         with:
           name: ct-term_to_binary_compat_prop-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-topic_permission:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -6596,13 +7109,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -6673,7 +7179,23 @@ jobs:
         with:
           name: ct-topic_permission-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-unit_access_control:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -6708,13 +7230,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -6785,7 +7300,23 @@ jobs:
         with:
           name: ct-unit_access_control-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-unit_access_control_authn_authz_context_propagation:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -6820,13 +7351,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -6897,7 +7421,23 @@ jobs:
         with:
           name: ct-unit_access_control_authn_authz_context_propagation-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-unit_access_control_credential_validation:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -6932,13 +7472,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -7009,7 +7542,23 @@ jobs:
         with:
           name: ct-unit_access_control_credential_validation-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-unit_amqp091_content_framing:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -7044,13 +7593,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -7121,7 +7663,23 @@ jobs:
         with:
           name: ct-unit_amqp091_content_framing-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-unit_amqp091_server_properties:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -7156,13 +7714,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -7233,7 +7784,23 @@ jobs:
         with:
           name: ct-unit_amqp091_server_properties-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-unit_app_management:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -7268,13 +7835,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -7345,7 +7905,23 @@ jobs:
         with:
           name: ct-unit_app_management-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-unit_cluster_formation_locking_mocks:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -7380,13 +7956,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -7457,7 +8026,23 @@ jobs:
         with:
           name: ct-unit_cluster_formation_locking_mocks-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-unit_collections:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -7492,13 +8077,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -7569,7 +8147,23 @@ jobs:
         with:
           name: ct-unit_collections-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-unit_config_value_encryption:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -7604,13 +8198,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -7681,7 +8268,23 @@ jobs:
         with:
           name: ct-unit_config_value_encryption-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-unit_connection_tracking:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -7716,13 +8319,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -7793,7 +8389,23 @@ jobs:
         with:
           name: ct-unit_connection_tracking-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-unit_credit_flow:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -7828,13 +8440,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -7905,7 +8510,23 @@ jobs:
         with:
           name: ct-unit_credit_flow-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-unit_disk_monitor:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -7940,13 +8561,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -8017,7 +8631,23 @@ jobs:
         with:
           name: ct-unit_disk_monitor-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-unit_disk_monitor_mocks:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -8052,13 +8682,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -8129,7 +8752,23 @@ jobs:
         with:
           name: ct-unit_disk_monitor_mocks-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-unit_file_handle_cache:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -8164,13 +8803,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -8241,7 +8873,23 @@ jobs:
         with:
           name: ct-unit_file_handle_cache-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-unit_gen_server2:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -8276,13 +8924,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -8353,7 +8994,23 @@ jobs:
         with:
           name: ct-unit_gen_server2-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-unit_gm:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -8388,13 +9045,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -8465,7 +9115,23 @@ jobs:
         with:
           name: ct-unit_gm-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-unit_log_config:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -8500,13 +9166,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -8577,7 +9236,23 @@ jobs:
         with:
           name: ct-unit_log_config-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-unit_log_management:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -8612,13 +9287,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -8689,7 +9357,23 @@ jobs:
         with:
           name: ct-unit_log_management-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-unit_operator_policy:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -8724,13 +9408,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -8801,7 +9478,23 @@ jobs:
         with:
           name: ct-unit_operator_policy-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-unit_pg_local:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -8836,13 +9529,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -8913,7 +9599,23 @@ jobs:
         with:
           name: ct-unit_pg_local-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-unit_plugin_directories:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -8948,13 +9650,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -9025,7 +9720,23 @@ jobs:
         with:
           name: ct-unit_plugin_directories-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-unit_plugin_versioning:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -9060,13 +9771,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -9137,7 +9841,23 @@ jobs:
         with:
           name: ct-unit_plugin_versioning-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-unit_priority_queue:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -9172,13 +9892,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -9249,7 +9962,23 @@ jobs:
         with:
           name: ct-unit_priority_queue-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-unit_queue_consumers:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -9284,13 +10013,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -9361,7 +10083,23 @@ jobs:
         with:
           name: ct-unit_queue_consumers-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-unit_stats_and_metrics:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -9396,13 +10134,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -9473,7 +10204,23 @@ jobs:
         with:
           name: ct-unit_stats_and_metrics-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-unit_supervisor2:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -9508,13 +10255,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -9585,7 +10325,23 @@ jobs:
         with:
           name: ct-unit_supervisor2-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-unit_vm_memory_monitor:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -9620,13 +10376,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -9697,7 +10446,23 @@ jobs:
         with:
           name: ct-unit_vm_memory_monitor-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-upgrade_preparation:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -9732,13 +10497,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -9809,7 +10567,23 @@ jobs:
         with:
           name: ct-upgrade_preparation-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   ct-vhost:
     needs: [checks]
     # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
@@ -9844,13 +10618,6 @@ jobs:
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && 'oldest' == 'oldest'
         uses: actions/cache@v1
@@ -9921,7 +10688,23 @@ jobs:
         with:
           name: ct-vhost-logs
           path: "*-ct-logs-*.tar.xz"
-  # vim:sw=2:et:
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done  # vim:sw=2:et:
   capture-tested-deps-versions:
     needs:
       - dialyzer

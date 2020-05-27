@@ -33,13 +33,6 @@
             FAIL_FAST=1 \
             SKIP_AS_ERROR=1 \
             CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
-      - name: HONEYCOMB
-        run: |
-          for f in honeycomb/*; do
-            curl -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
-                -d @${f} \
-                "https://api.honeycomb.io/1/events/rabbitmq-ci"
-          done
       - name: CACHE SECONDARY UMBRELLAS
         if: success() && '$(ERLANG_VERSION_IS)' == 'oldest'
         uses: actions/cache@v1
@@ -110,3 +103,20 @@
         with:
           name: ct-$(CT_SUITE)-logs
           path: "*-ct-logs-*.tar.xz"
+      - name: HONEYCOMB
+        if: success() || failure()
+        run: |
+          echo "$(ls honeycomb | wc -l) events recorded"
+          for f in honeycomb/*; do
+            RC=$(curl --silent \
+                -H 'X-Honeycomb-Team: ${{ secrets.HONEYCOMB_TEAM }}' \
+                -d @${f} \
+                -o /dev/null \
+                -w "%{http_code}" \
+                "https://api.honeycomb.io/1/events/rabbitmq-ci")
+            if [ "$RC" != "200" ]; then
+              echo "Honeycomb returned ${RC}"
+              cat ${f}
+              printf "\n\n"
+            fi
+          done
