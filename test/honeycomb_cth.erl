@@ -90,7 +90,10 @@ post_end_per_testcase(Suite, TC, _Config, Return, #state{github_workflow = Githu
     {Return, State#state{start_times = StartTimes#{Suite := SuiteTimes1}}}.
 
 filename(Suite, TC, #state{directory = Dir}) ->
-    filename:join(Dir, atom_to_list(Suite) ++ "_" ++ atom_to_list(TC)
+    filename:join(Dir,
+                  integer_to_list(erlang:system_time())
+                  ++ "_" ++ atom_to_list(Suite)
+                  ++ "_" ++ atom_to_list(TC)
                   ++ ".json").
 
 memory_json_term(SystemMemoryData) when is_list(SystemMemoryData) ->

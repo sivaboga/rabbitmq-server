@@ -90,7 +90,8 @@
               FAIL_FAST=1 \
               SKIP_AS_ERROR=1 \
               SECONDARY_UMBRELLA=$PWD/$umbrella \
-              RABBITMQ_FEATURE_FLAGS=
+              RABBITMQ_FEATURE_FLAGS= \
+              CT_OPTS="-ct_hooks honeycomb_cth '[{directory,\"$PWD/honeycomb\"}]'"
           done
       - name: ON FAILURE ARCHIVE TESTS LOGS
         if: failure()
