@@ -33,8 +33,11 @@ init(Id, _Opts) ->
                 system_architecture = erlang:system_info(system_architecture),
                 system_memory_data = memsup:get_system_memory_data()}}.
 
-pre_init_per_testcase(_Suite, TC, Config, #state{start_times = StartTimes} = State) ->
-    {Config, State#state{start_times = StartTimes#{TC => erlang:timestamp()}}}.
+pre_init_per_testcase(Suite, TC, Config, #state{start_times = StartTimes} = State) ->
+    SuiteTimes = maps:get(Suite, StartTimes, #{}),
+    {Config, State#state{start_times =
+                             StartTimes#{Suite =>
+                                             SuiteTimes#{TC => erlang:timestamp()}}}}.
 
 post_end_per_testcase(Suite, TC, _Config, Return, #state{github_workflow = GithubWorkflow,
                                                          github_run_id = GithubRunId,
@@ -51,8 +54,10 @@ post_end_per_testcase(Suite, TC, _Config, Return, #state{github_workflow = Githu
                                                          system_memory_data = SystemMemoryData,
                                                          start_times = StartTimes} = State) ->
     EndTime = erlang:timestamp(),
-    {StartTime, StartTimes1} = maps:take(TC, StartTimes),
+    SuiteTimes = maps:get(Suite, StartTimes),
+    {StartTime, SuiteTimes1} = maps:take(TC, SuiteTimes),
     DurationMicroseconds = timer:now_diff(EndTime, StartTime),
+
     File = filename(Suite, TC, State),
     ok = filelib:ensure_dir(File),
     {ok, F} = file:open(File, [write]),
@@ -78,7 +83,7 @@ post_end_per_testcase(Suite, TC, _Config, Return, #state{github_workflow = Githu
 
     file:write(F, Json),
     file:close(F),
-    {Return, State#state{start_times = StartTimes1}}.
+    {Return, State#state{start_times = StartTimes#{Suite := SuiteTimes1}}}.
 
 filename(Suite, TC, #state{directory = Dir}) ->
     filename:join(Dir, atom_to_list(Suite) ++ "_" ++ atom_to_list(TC)
