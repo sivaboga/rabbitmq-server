@@ -8,7 +8,8 @@
 
 -record(state, {directory, github_workflow, github_run_id,
                 github_repository, github_sha, github_ref,
-                base_rmq_ref, erlang_version, elixir_version,
+                base_rmq_ref, secondary_umbrella,
+                erlang_version, elixir_version,
                 otp_release, cpu_topology, schedulers,
                 system_architecture, system_memory_data,
                 start_times = #{}}).
@@ -25,6 +26,7 @@ init(Id, _Opts) ->
                 github_sha = os:getenv("GITHUB_SHA", "unknown"),
                 github_ref = os:getenv("GITHUB_REF", "unknown"),
                 base_rmq_ref = os:getenv("BASE_RMQ_REF", "unknown"),
+                secondary_umbrella = os:getenv("SECONDARY_UMBRELLA", "none"),
                 erlang_version = os:getenv("ERLANG_VERSION", "unknown"),
                 elixir_version = os:getenv("ELIXIR_VERSION", "unknown"),
                 otp_release = erlang:system_info(otp_release),
@@ -45,6 +47,7 @@ post_end_per_testcase(Suite, TC, _Config, Return, #state{github_workflow = Githu
                                                          github_sha = GithubSha,
                                                          github_ref = GithubRef,
                                                          base_rmq_ref = BaseRmqRef,
+                                                         secondary_umbrella = SecondaryUmbrella,
                                                          erlang_version = ErlangVersion,
                                                          elixir_version = ElixirVersion,
                                                          otp_release = OtpRelease,
@@ -69,6 +72,7 @@ post_end_per_testcase(Suite, TC, _Config, Return, #state{github_workflow = Githu
                        {<<"github_sha">>, list_to_binary(GithubSha)},
                        {<<"github_ref">>, list_to_binary(GithubRef)},
                        {<<"base_rmq_ref">>, list_to_binary(BaseRmqRef)},
+                       {<<"secondary_umbrella">>, list_to_binary(SecondaryUmbrella)},
                        {<<"erlang_version">>, list_to_binary(ErlangVersion)},
                        {<<"elixir_version">>, list_to_binary(ElixirVersion)},
                        {<<"otp_release">>, list_to_binary(OtpRelease)},
