@@ -365,12 +365,20 @@ handle_aux(leader, _, {down, Pid, normal}, Monitors, LogState, _) ->
     {no_reply, maps:remove(Pid, Monitors), LogState};
 handle_aux(leader, _, {down, Pid, Reason}, Monitors0, LogState, _) ->
     %% The phase has failed, let's retry it
-    {phase, StreamId, Fun, Args} = maps:get(Pid, Monitors0),
-    rabbit_log:warning("Error while executing coordinator phase ~p for stream queue ~p ~p",
-                       [Fun, StreamId, Reason]),
-    NewPid = erlang:apply(?MODULE, Fun, Args),
-    Monitors = maps:put(NewPid, StreamId, maps:remove(Pid, Monitors0)),
-    {no_reply, Monitors, LogState};
+    case maps:get(Pid, Monitors0) of
+        {phase, StreamId, phase_start_new_leader, Args} ->
+            rabbit_log:warning("Error while starting new leader for stream queue ~p, "
+                               "restarting election: ~p", [StreamId, Reason]),
+            NewPid = erlang:apply(?MODULE, phase_check_quorum, Args),
+            Monitors = maps:put(NewPid, StreamId, maps:remove(Pid, Monitors0)),
+            {no_reply, Monitors, LogState};
+        {phase, StreamId, Fun, Args} ->
+            rabbit_log:warning("Error while executing coordinator phase ~p for stream queue ~p ~p",
+                               [Fun, StreamId, Reason]),
+            NewPid = erlang:apply(?MODULE, Fun, Args),
+            Monitors = maps:put(NewPid, StreamId, maps:remove(Pid, Monitors0)),
+            {no_reply, Monitors, LogState}
+    end;
 handle_aux(_, _, _, AuxState, LogState, _) ->
     {no_reply, AuxState, LogState}.
 
